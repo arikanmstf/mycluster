@@ -32,7 +32,7 @@ function init(){
 	map.setCenter(cent, 3);
 
 	//set the cluster
-	_cluster = new OpenLayers.myCluster({m:map});	
+	_cluster = new OpenLayers.myCluster({map:map});	
 	
 	var lonlat = new OpenLayers.LonLat(6,12);
 	addMarker(lonlat);

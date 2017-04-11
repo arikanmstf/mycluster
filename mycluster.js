@@ -14,7 +14,7 @@
 
 **/
 OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
-    m: null,
+    map: null,
     f: [],
     d: 30,
     cf: null,
@@ -24,23 +24,23 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
     sd: [],
     ll: null,
     init: function() {
-        var e = this;
+        var self = this;
         OpenLayers.Layer.Markers.prototype.clearMarkersMc = function() {
-            this.clearMarkers(), e.cfs()
+            this.clearMarkers(), self.cfs()
         };
-        if (!e.ll) {
-            e.ll = new OpenLayers.Layer.Vector("Lines", {
+        if (!self.ll) {
+            self.ll = new OpenLayers.Layer.Vector("Lines", {
                 eventListeners: {
                     click: function() {
-                        e.reset()
+                        self.reset()
                     }
                 }
-            })
+            });
         };
         var r = function() {
                 return !0
             },
-            t = new OpenLayers.Control.SelectFeature(e.ll, {
+            t = new OpenLayers.Control.SelectFeature(self.ll, {
                 hover: !0,
                 highlightOnly: !0,
                 renderIntent: "temporary",
@@ -50,11 +50,10 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
                     featurehighlighted: r
                 }
             });
-        e.m.addControl(t), t.activate(), e.m.addLayer(e.ll), e.ll.setZIndex(330);
-        var a = e.m;
-        e.reset(), e.m.events.register("zoomend", a, function() {
-            e.reset()
-        })
+        self.map.addControl(t), t.activate(), self.map.addLayer(self.ll), self.ll.setZIndex(330);
+        self.reset(), self.map.events.register("zoomend", self.map, function() {
+            self.reset()
+        });
     },
     afs: function(e) {
         var r = this;
@@ -97,9 +96,9 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
             s = r / e.length,
             p = this.cf;
         for (i = 0; i <= e.length - 1; i++) {
-            var l = this.m.getLayerPxFromLonLat(p.marker.lonlat.transform(new OpenLayers.Projection("EPSG:4326")));
+            var l = this.map.getLayerPxFromLonLat(p.marker.lonlat.transform(new OpenLayers.Projection("EPSG:4326")));
             ang = a + i * s, l.x += o * Math.cos(ang), l.y += o * Math.sin(ang), e[i].marker.draw(l), e[i].am && e[i].am.draw(l);
-            var c = this.m.getLonLatFromLayerPx(l).transform(new OpenLayers.Projection("EPSG:4326"));
+            var c = this.map.getLonLatFromLayerPx(l).transform(new OpenLayers.Projection("EPSG:4326"));
             e[i].popup.lonlat = c, e[i].popup.updatePosition(), e[i].popup2.lonlat = c, e[i].popup2.updatePosition(), this.dl(p.marker.lonlat, c)
         }
     },
@@ -131,7 +130,7 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
         return t.distanceTo(a)
     },
     dl: function(e, r) {
-        OpenLayers.Feature.Vector.style["default"].strokeColor = "#0000ff", OpenLayers.Feature.Vector.style["default"].strokeWidth = 3, OpenLayers.Feature.Vector.style.temporary.strokeColor = "#ff0000", ll = this.ll, m = this.m;
+        OpenLayers.Feature.Vector.style["default"].strokeColor = "#0000ff", OpenLayers.Feature.Vector.style["default"].strokeWidth = 3, OpenLayers.Feature.Vector.style.temporary.strokeColor = "#ff0000", ll = this.ll, m = this.map;
         var t = new Array(new OpenLayers.Geometry.Point(e.lon, e.lat), new OpenLayers.Geometry.Point(r.lon, r.lat)),
             a = new OpenLayers.Geometry.LineString(t),
             n = new OpenLayers.Feature.Vector(a);
@@ -172,7 +171,7 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
     reset: function() {
         var e = this;
         for (e.co = !1, e.sfs(), e.ll.destroyFeatures(), md = e.md, i = 0; i <= md.length - 1; i++) {
-            var r = e.m.getLayerPxFromLonLat(md[i].rl.transform(new OpenLayers.Projection("EPSG:4326")));
+            var r = e.map.getLayerPxFromLonLat(md[i].rl.transform(new OpenLayers.Projection("EPSG:4326")));
             md[i].marker.draw(r), md[i].am && md[i].am.draw(r), md[i].popup.lonlat = md.rl, md[i].popup.updatePosition(), md[i].popup2.lonlat = md.rl, md[i].popup2.updatePosition(), md[i].marker.events.remove("mouseover")
         }
     },
@@ -188,7 +187,7 @@ OpenLayers.myCluster = OpenLayers.Class(OpenLayers.Strategy, {
         })
     },
     m2p: function(e) {
-        var r, t = this.m.getZoom();
+        var r, t = this.map.getZoom();
         switch (t) {
             case 0:
                 r = e / 156412;
